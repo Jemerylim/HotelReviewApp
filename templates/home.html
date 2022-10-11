@@ -1,1 +1,50 @@
-<html><h1>hi</h1></html>
+<!DOCTYPE html>
+    <html>
+        <head>
+            <title>Hotel Reviews</title>
+        </head>
+        <body>
+            <div class="main">
+                <h1>Hotel Review Thing!!</h1>
+                <div class=form id='viewData'>
+                    <p>Select a Hotel:</p>
+                    <form method="post" action='/'>
+                        <select name='reviews'>
+                            <option value="{{hotels[0]}}" selected>{{hotels[0]}}</option>>
+                            {% for hotel in hotels[1:] %}
+                            <option value="{{hotel}}">{{hotel}}</option>>
+                            {% endfor %}
+                        </select>
+                        <button type="submit">Submit</button>
+                    </form>    
+                <div class=form id='refreshData'>
+                    <p>Select a Hotel to refresh data:</p>
+                    <select name='reviews' method="GET" action='/reviews'>
+                        <option value="{{hotels[0]}}" selected>{{hotels[0]}}</option>>
+                        {% for hotel in hotels[1:] %}
+                        <option value="{{hotel}}">{{hotel}}</option>>
+                        {% endfor %}
+                    </select>
+
+                </div>
+            </div>
+        </body>
+    </html>
+
+<style>
+    body{
+        background-color: white;
+    }
+    .main{
+        margin: auto;
+        width: 70%;
+        background-color: #D1FAFF;
+        padding: 10px;
+        text-align: center;
+    }
+    form{
+        margin: auto;
+        width: 50%;
+        text-align: center;
+    }
+</style>
