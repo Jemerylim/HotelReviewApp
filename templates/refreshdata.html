@@ -11,17 +11,18 @@
             </nav>
             <div class="main">
                 <h1>Hotel Review Thing!!</h1>
-                <div class=form id='viewData'>
-                    <p>Select a Hotel:</p>
-                    <form method="post" action='/'>
-                        <select name='reviews'>
+                <div class=form id='refreshData'>
+                    <p>Select a Hotel to refresh data:</p>
+                    <form method="post" action='/refresh'>
+                        <select name='reviewstorefresh'>
                             <option value="{{hotels[0]}}" selected>{{hotels[0]}}</option>
                             {% for hotel in hotels[1:] %}
                             <option value="{{hotel}}">{{hotel}}</option>
                             {% endfor %}
                         </select>
-                        <button type="submit" name="btn_identifier" value="view_button">Submit</button>
-                    </form>    
+                        <button type="submit" name="'btn_identifier" value="refresh_button">Submit</button>
+                        <p>{{displaymessage}}</p>
+                    </form>
                 </div>
             </div>
         </body>

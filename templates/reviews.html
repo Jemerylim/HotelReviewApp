@@ -1,2 +1,16 @@
-<h1>hi </h1>
-<h1>{{hotels}}</h1>
+<!DOCTYPE html>
+    <html>
+        <head>
+            <title>Hotel Reviews</title>
+        </head>
+        <body>
+                <nav>
+                    <a href="{{ url_for('main') }}">Home</a>
+                    <a href="{{ url_for('refreshData') }}">Refresh</a>
+                    <a href="{{ url_for('cloudpage') }}">Word Cloud</a>
+                </nav>
+                <h1>hi </h1>
+                <h1>{{hotels}}</h1>
+                <p>{{reviewdata}}</p>
+        </body>
+    </html>
