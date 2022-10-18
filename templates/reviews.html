@@ -9,8 +9,57 @@
                     <a href="{{ url_for('refreshData') }}">Refresh</a>
                     <a href="{{ url_for('cloudpage') }}">Word Cloud</a>
                 </nav>
-                <h1>hi </h1>
+                <div class="main">
                 <h1>{{hotels}}</h1>
-                <p>{{reviewdata}}</p>
+                <a href="{{hotelwebsite}}"> Hotel's Website</a>
+                <table class="table">
+                    <thead class="table_header">
+                        <tr>
+                            {% for header in headings %} 
+                            <th>{{ header }}</th>
+                            {% endfor %} 
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in reviewdata %} 
+                            <tr class="table_row">
+                                <td class="table_cell">{{reviewdata[row]['reviewTitle']}}</td>
+                                <td class="table_cell">{{(reviewdata[row]['reviewRating']|int)/10}}</td>
+                                <td class="table_cell">{{reviewdata[row]['reviewDate']}}</td>
+                                <td class="table_cell">{{reviewdata[row]['reviewText']}}</td>
+                            </tr>
+                        {% endfor %} 
+                    </tbody>
+                </table>
+            </div>
         </body>
     </html>
+
+
+    <style>
+        .main{
+            margin: auto;
+            width: 70%;
+            background-color: #D1FAFF;
+            padding: 10px;
+            text-align: center;
+        }
+        .table {
+            border-spacing: 5;
+            margin: 1rem;
+            background-color: #f5f5f5;
+        }
+
+        .table_row:nth-child(even) {
+            background-color: #e5e5e5;
+        }
+
+        .table_header {
+            text-align: center;
+        }
+
+        .table_cell {
+            padding: 15px;
+            text-align: center;
+        }
+    </style>

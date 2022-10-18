@@ -1,1 +1,39 @@
-<p>{{keyword}}</p>
+<!DOCTYPE html>
+    <html>
+        <head>
+            <title>Hotel Reviews</title>
+        </head>
+        <body>
+            <nav>
+                <a href="{{ url_for('main') }}">Home</a>
+                <a href="{{ url_for('refreshData') }}">Refresh</a>
+                <a href="{{ url_for('cloudpage') }}">Word Cloud</a>
+            </nav>
+            <div class="main">  
+                <img src="{{ img_data }}" />
+            </div>
+        </body>
+    </html>
+
+
+    <style>
+        body{
+            background-color: white;
+        }
+        .main{
+            margin: auto;
+            width: 70%;
+            background-color: #D1FAFF;
+            padding: 10px;
+            text-align: center;
+        }
+        form{
+            margin: auto;
+            width: 50%;
+            text-align: center;
+        }
+    </style>    
+<script>
+
+
+</script>
