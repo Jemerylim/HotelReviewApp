@@ -1,4 +1,6 @@
+from ast import keyword
 import base64
+from datetime import datetime
 import io
 from pickle import GET
 from random import random
@@ -17,6 +19,8 @@ from wordcloud import WordCloud
 import pandas as pd
 import urllib
 import numpy as np
+import babel
+import time
 
 app = Flask(__name__)
 app.secret_key = 'secret'
@@ -40,9 +44,16 @@ hotelswebsite = {'Campbell Inn': 'https://nomadrest.com/campbell-inn-singapore/'
     wc.fit_words(d)
     return wc.to_image() """
 
-def green_colour_func():
-    return ("hsl(119,93%%, %d%%)"% np.random.randint(45,51))
+def green_color_func(word, font_size, position,orientation,random_state=None, **kwargs):
+    return("hsl(155,67%%, %d%%)" % np.random.randint(45,51))
 
+def red_color_func(word, font_size, position,orientation,random_state=None, **kwargs):
+    return("hsl(2,80%%, %d%%)" % np.random.randint(45,51))
+
+@app.template_filter()
+def format_datetime(value):
+    
+    return (datetime.strptime(value,'%B %Y')).strftime('%B %Y')
 
 @app.route('/', methods=('GET','POST'))
 def main(): 
@@ -66,10 +77,14 @@ def reviewsPage():
         return redirect(url_for('reviewsPage'))
 
     elif request.method =='GET':
-       headings = ("Title", "Score", "DateTime", "Review")
+       headings = ("Title", "Score", "Date", "Review")
        hotel = session['hotel'][0]['hotel']
        reviewdata = fb_app.get('/'+hotel,None)
-       return render_template('reviews.html', hotels = hotel, reviewdata = reviewdata, headings = headings, hotelwebsite = hotelswebsite[hotel])
+       total = 0
+       for rating in reviewdata:
+        total += int(reviewdata[rating]['reviewRating'])/10
+       average = "{:.2f}".format(total/len(reviewdata))
+       return render_template('reviews.html', hotels = hotel, reviewdata = reviewdata, headings = headings, hotelwebsite = hotelswebsite[hotel], average = average)
 
 
 @app.route('/refresh', methods=('GET','POST'))
@@ -79,10 +94,10 @@ def refreshData():
         hotel = request.form['reviewstorefresh']
         messages = []
         messages.append(hotel)
-        displaymessage = hotel + ' data has been refreshed.'
         api_url = 'http://127.0.0.1:5000/scrapeone'
         data = {"query_string" : hotel}
         response = requests.post(api_url,json=data)
+        displaymessage = hotel + ' data has been refreshed.'
         #return redirect(url_for('refreshData'))
 
         #elif request.method =='GET':
@@ -98,11 +113,11 @@ def cloudpage():
         hotel = request.form['hotelname']
         messages.append({'hotel':hotel})
         session['hotel'] = messages
-        api_url = 'http://127.0.0.1:5002/api/keywords'
+        '''api_url = 'http://127.0.0.1:5002/api/keywords'
         data = {"query_string" : hotel}
         response = requests.post(api_url,json=data)
         session['keyword'] = (response.json())['keyword']
-        
+        print(session['keyword'])'''
         return redirect(url_for('hotelcloud'))
 
     return render_template('viewcloud.html', hotels = hotels)
@@ -115,8 +130,19 @@ def hotelcloud():
         return redirect(url_for('reviewsPage'))
 
     elif request.method =='GET':
-       keyword = session['keyword']
        hotel = session['hotel'][0]['hotel']
+       api_url = 'http://127.0.0.1:5002/api/keywords'
+       data = {"query_string" : hotel}
+       response = requests.post(api_url,json=data)
+       keyword = (response.json())['keyword']
+       
+
+
+       reviewdata = fb_app.get('/'+hotel,None)
+       total = 0
+       for rating in reviewdata:
+        total += int(reviewdata[rating]['reviewRating'])/10
+       average = "{:.2f}".format(total/len(reviewdata))
        img = io.BytesIO()
        #plot_wordcloud(data=keyword).save(img, format='PNG')
        #fig = WordCloud(collocations = False, background_color = 'white').generate(keyword)
@@ -134,7 +160,10 @@ def hotelcloud():
             wordcloud = WordCloud(
                 background_color="white",max_words=1000,stopwords=stop_words)
             wordcloud.generate(keyword)
-            #wordcloud.recolor(color_func=green_colour_func())
+            if float(average) > 3.5:
+                wordcloud.recolor(color_func=green_color_func)
+            else:
+                wordcloud.recolor(color_func=red_color_func)
             plt.imshow(wordcloud, interpolation="bilinear")
             plt.axis("off")
             image = io.BytesIO()
@@ -143,12 +172,12 @@ def hotelcloud():
             string = base64.b64encode(image.read())
             image_64 = "data:image/png;base64," +   urllib.parse.quote_plus(string)
             session['keyword'] = ''
-            return render_template('cloud.html',img_data = image_64)
+            return render_template('cloud.html',img_data = image_64, average = average)
        except ValueError:
         return None
        #return render_template('cloud.html',keyword = data,img_data = data)
 
-    return render_template('cloud.html', hotels = hotel,keyword =  keyword)
+    return render_template('cloud.html', hotels = hotel,keyword =  keyword,average = average)
 
 
 
